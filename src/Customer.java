@@ -1,32 +1,39 @@
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Customer {
 
     int id;
     String name;
     String status; // Active or Blocked
-    Optional<Object> accounts;
+    List<Account> accounts;
 
-    public Customer(int id, String name, String status, Optional<Object> accounts) throws Exception {
+    public Customer(int id, String name) throws Exception {
         this.validateName(name);
-        this.validateStatus(status);
+        // this.validateStatus(status);
 
         this.id = id;
         this.name = name;
-        this.status = status;
-        this.accounts = accounts;
+        this.status = "active";
+        // this.status = status;
+        this.accounts = new ArrayList<>();
     }
 
     private void validateName(String name) throws Exception {
-        if (name.length() < 3 || !name.matches("^[a-zA-Z\\s]+$")) {
+        if (name != null && (name.length() < 3 || name.length() > 60 || !name.matches("^[a-zA-Z\\s]+$"))) {
             throw new Exception("The name must be at least 3 characters long and does not contain any numbers.");
         }
     }
 
     private void validateStatus(String status) throws Exception {
-        if (status != "active" || status != "blocked") {
+        if (!"active".equals(status) && !"blocked".equals(status)) {
             throw new Exception("The status must be active or blocked.");
         }
-
     }
+
+    @Override
+    public String toString() {
+        return "Customer [id=" + id + ", name=" + name + ", status=" + status + ", accounts=" + accounts + "]";
+    }
+
 }
