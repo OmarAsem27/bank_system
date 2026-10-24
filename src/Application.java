@@ -1,9 +1,12 @@
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Scanner;
 
 public class Application {
 
-    final int MAX_OPTIONS = 3;
+    final int MAX_OPTIONS = 6;
     Scanner sc;
     Bank bank;
 
@@ -20,7 +23,10 @@ public class Application {
         while (appRunning) {
             System.out.println("please, enter your wanted operation number between the following choices:");
             System.out.println("1. Open Account");
-            System.out.println("2. Print Customers");
+            System.out.println("2. Deposit Money");
+            System.out.println("3. Print Customers");
+            System.out.println("4. Print Transactions");
+            System.out.println("5. Print Balance");
             System.out.println(MAX_OPTIONS + ". Exit");
 
             if (sc.hasNextInt()) {
@@ -48,7 +54,16 @@ public class Application {
                 this.openAccount();
                 break;
             case 2:
+                this.depositMoney();
+                break;
+            case 3:
                 this.printCustomers();
+                break;
+            case 4:
+                this.printTransactions();
+                break;
+            case 5:
+                this.printBalance();
                 break;
             case MAX_OPTIONS:
                 this.exitApp();
@@ -99,22 +114,19 @@ public class Application {
                 this.sc.nextLine(); // Clear the newline character left in the buffer
 
                 if (isAccountType) {
-                    // Range check for account types (must be 1, 2, or 3)
                     if (tempInp >= 1 && tempInp <= 3) {
-                        inp = tempInp; // Valid choice; breaks the loop
+                        inp = tempInp;
                     } else {
                         System.out.println("Error: Please select a valid choice for account types (1, 2, or 3).");
                     }
                 } else {
-                    // Standard positive number check
                     if (tempInp >= 0) {
-                        inp = tempInp; // Valid ID; breaks the loop
+                        inp = tempInp;
                     } else {
                         System.out.println("Error: The number must be greater than or equal to 0.");
                     }
                 }
             } else {
-                // User entered non-integer text (e.g., "abc")
                 System.out.println("Invalid input, please enter a valid whole number.");
                 this.sc.nextLine(); // Clear the invalid input from the buffer
             }
@@ -155,6 +167,62 @@ public class Application {
             System.out.println("no customers were found.\n");
         }
         this.collectUserInput();
+    }
+
+    private void depositMoney() {
+        int accountId = getValidInputId("Account", false);
+        System.out.println("Enter the amount to be deposited:");
+        boolean isValid = false;
+        float amnt = -1;
+
+        while (!isValid) {
+            if (this.sc.hasNextFloat()) {
+                amnt = this.sc.nextFloat();
+                this.sc.nextLine(); // Clear the buffer line
+
+                if (amnt >= 0) {
+                    isValid = true;
+                } else {
+                    System.out.println("Failed. Please enter a valid non-negative amount:");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number:");
+                this.sc.nextLine();
+            }
+        }
+
+        try {
+            this.bank.depositMoney(accountId, amnt);
+            System.out.println("Transaction done successfully.");
+        } catch (Exception e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+
+    private void printTransactions() {
+        List<Transaction> transactions = this.bank.transactions;
+
+        if (transactions.size() > 0) {
+            for (int i = 0; i < transactions.size(); i++) {
+
+                System.out.printf(
+                        "Transaction Number %d of %d: \nID is %d, amount is %s, createdAt is %s, status is %s, account is %s%n",
+                        i + 1,
+                        transactions.size(),
+                        transactions.get(i).id,
+                        transactions.get(i).amount,
+                        transactions.get(i).createdAt,
+                        transactions.get(i).status,
+                        transactions.get(i).account);
+            }
+        } else {
+            System.out.println("no transactions were found.\n");
+        }
+        this.collectUserInput();
+    }
+
+    private void printBalance() {
+        System.out.println(this.bank.accounts.getFirst().toString());
     }
 
 }

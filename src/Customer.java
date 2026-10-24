@@ -14,7 +14,7 @@ public class Customer {
 
         this.id = id;
         this.name = name;
-        this.status = "active";
+        this.status = "Active";
         // this.status = status;
         this.accounts = new ArrayList<>();
     }
@@ -26,7 +26,7 @@ public class Customer {
     }
 
     private void validateStatus(String status) throws Exception {
-        if (!"active".equals(status) && !"blocked".equals(status)) {
+        if (!"Active".equals(status) && !"Blocked".equals(status)) {
             throw new Exception("The status must be active or blocked.");
         }
     }
